@@ -8,4 +8,6 @@ export default{
     black:'#000000',
     alblack: '#252425',
     wine: "#570E28",
+    blackWine: "#331221",
+    lowBrawn:"#1a1010"
 };

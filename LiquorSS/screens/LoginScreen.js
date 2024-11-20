@@ -1,28 +1,46 @@
-// screens/LoginScreen.js
-import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { Header } from '../components/layout/Header';
+import { Logo2 } from '../components/layout/Logo';
+import { ButtonClassTwo } from '../components/Controls/Buttons';
+import { Wrapper } from '../components/layout/Wrapper';
+import {Title} from '../components/layout/Titles'
+import {FormItem} from '../components/Controls/Formitem';
+import { StyleSheet, View } from "react-native";
+import { Content } from '../components/layout/Content';  
 
-const LoginScreen = () => {
+
+export default function LoginScreen({ navigation }) {
+  const goToHome = () => {
+    navigation.navigate('Shop');
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Pantalla de Login</Text>
-      <Button title="Iniciar sesión" onPress={() => {}} />
-    </View>
+    <Wrapper>
+      <Header showBack={true}/>
+      <Logo2 />
+      <Title label="Sign In" />
+      
+      <View style={styles.customContentContainer}>
+        <Content>
+          <FormItem label="Nombre de usuario" placeholder="Your user" />
+          <FormItem label="Contraseña" placeholder="Your password" />
+          <View style={styles.Buttom}>
+          <ButtonClassTwo label="ACCEDER" onPress={goToHome}  />            
+          </View>
+
+        </Content>
+      </View>
+    </Wrapper>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+  customContentContainer: {
+    marginTop: 70,
   },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000',
-  },
+  Buttom:{
+    width: "100%",
+    alignItems:"center",
+    marginTop:50
+  }
 });
 
-export default LoginScreen;

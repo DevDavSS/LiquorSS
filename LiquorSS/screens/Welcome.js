@@ -2,13 +2,22 @@ import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, ImageBackground, Image, Text } from 'react-native';
 import Fonts from '../constants/Fonts';
 import Button from '../components/Controls/Buttons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SplashScreen() {
   const moveAnimLogo = useRef(new Animated.Value(0)).current; // Controla la posición vertical del logo
   const scaleAnimLogo = useRef(new Animated.Value(1)).current; // Controla el tamaño (escala) del logo
+  const moveAnimButtons = useRef(new Animated.Value(200)).current; // Declaración correcta
 
   const moveAnimText = useRef(new Animated.Value(200)).current; // El texto inicia fuera de la pantalla (abajo)
-  const moveAnimButtons = useRef(new Animated.Value(200)).current; // Los botones inician fuera de la pantalla (abajo)
+//   const moveAnimButtons = useRef(new Animated.Value(200)).current; // Los botones inician fuera de la pantalla (abajo)
+    const navigation = useNavigation(); // Obtener el objeto navigation
+  const LoginScreen = () => {
+    navigation.navigate('Login'); 
+  };
+  const RegisterScreen = () => {
+    navigation.navigate('Register'); 
+  };
 
   useEffect(() => {
     // Animación del logo
@@ -24,7 +33,7 @@ export default function SplashScreen() {
       useNativeDriver: true,
     }).start();
 
-    // Después de que termine la animación del logo, animar el texto y los botones
+
     Animated.sequence([
       Animated.delay(2000), // Espera que termine la animación del logo
       Animated.parallel([
@@ -61,7 +70,7 @@ export default function SplashScreen() {
             },
           ]}
         />
-        {/* Hacemos que el texto no sea visible inicialmente */}
+
         <Animated.Text
           style={[
             styles.title,
@@ -76,7 +85,7 @@ export default function SplashScreen() {
         >
           ¡Welcome!
         </Animated.Text>
-        {/* Hacemos que los botones no sean visibles inicialmente */}
+   
         <Animated.View
           style={[
             styles.buttonContainer,
@@ -89,8 +98,8 @@ export default function SplashScreen() {
             },
           ]}
         >
-          <Button label="Sign Up" />
-          <Button label="Sign In" />
+          <Button label="Sign Up"  onPress={RegisterScreen}/>
+          <Button label="Sign In" onPress={LoginScreen}/>
         </Animated.View>
       </View>
     </ImageBackground>

@@ -25,6 +25,18 @@ export function ButtonClassTwo({label, type = 'black', onPress}){
     </TouchableOpacity>
   )
 }
+export function ButtonClassTree({label, type = 'black', onPress}){
+
+  return(
+    <TouchableOpacity onPress={onPress} style={[
+      styles.container2,
+      type === 'white' && styles.containerWhite
+    ]}>
+      <Text style={styles.text2}>{label}</Text>
+    </TouchableOpacity>
+  )
+}
+
 
 const styles = StyleSheet.create({
   container: {
@@ -51,8 +63,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.wine,
     borderRadius: 10,
-    paddingVertical: 20,
-    width: '50%',
-    marginTop: 70
-  }
+    paddingVertical: 10,
+    width: '90%',
+    marginTop: 50
+  },
+  text2: {
+    color: Colors.white,
+    fontFamily: Fonts.family.regular,
+    fontSize: Fonts.size.small,
+  },
 });
