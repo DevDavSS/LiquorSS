@@ -16,7 +16,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <Wrapper>
       <Header showBack={true}/>
-      <Logo2 />
+      <Logo2/>
       <Title label="Sign In" />
       
       <View style={styles.customContentContainer}>
