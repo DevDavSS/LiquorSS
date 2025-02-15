@@ -43,7 +43,7 @@ export function BirthdatePicker({ label }) {  // Desestructuramos correctamente 
           mode="date"
           display="default"
           onChange={onChange}
-          maximumDate={new Date()} // No permitir fechas futuras
+          maximumDate={new Date()} 
         />
       )}
     </View>

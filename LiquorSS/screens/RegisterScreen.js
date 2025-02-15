@@ -6,6 +6,7 @@ import {Title} from '../components/layout/Titles'
 import {FormItem}  from '../components/Controls/Formitem';
 import {BirthdatePicker} from '../components/Controls/Formitem';
 import { Content } from '../components/layout/Content';  
+import { ScrollView } from 'react-native';
 
 export default function LoginScreen({ navigation }) {
   const goToHome = () => {
@@ -13,7 +14,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <Wrapper>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <Header showBack={true} />
       <Logo2 />
       <Title label={"Sign Up"}></Title>
@@ -24,8 +25,10 @@ export default function LoginScreen({ navigation }) {
         <BirthdatePicker label={"Fecha de Nacimiento"}></BirthdatePicker>
         <FormItem label="Contraseña" placeholder="Your password" />
         <ButtonClassTwo label="ACCEDER" onPress={goToHome} />
-      </Content>
-    </Wrapper>
+      </Content>      
+    </ScrollView>
+
+    
   );
 }
 

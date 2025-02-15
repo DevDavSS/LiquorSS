@@ -14,7 +14,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <Wrapper>
+   <View>
       <Header showBack={true}/>
       <Logo2/>
       <Title label="Sign In" />
@@ -28,8 +28,10 @@ export default function LoginScreen({ navigation }) {
           </View>
 
         </Content>
-      </View>
-    </Wrapper>
+      </View>    
+   </View>
+
+    
   );
 }
 
