@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "387802343878",
+    "project_id": "liquorsso",
+    "storage_bucket": "liquorsso.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387802343878:android:95a077326ac1cad1b5eac7",
+        "android_client_info": {
+          "package_name": "com.SansCorp.LiquorSS"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387802343878-8uk718e2uv4aed90cn2qhkddhi9f7k46.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.SansCorp.LiquorSS",
+            "certificate_hash": "d433e12ab05afc18beb0180c3a3bada053dfe751"
+          }
+        },
+        {
+          "client_id": "387802343878-nlja2s60ar28i8dcle3k6l4hte5aotnc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMO7qd19xdy_pdxx-Tw3xDsEKVnKsVdiU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387802343878-nlja2s60ar28i8dcle3k6l4hte5aotnc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

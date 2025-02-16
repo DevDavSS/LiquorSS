@@ -1,31 +1,30 @@
-// Import the functions you need from the SDKs you need
-
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeAuth, getReactNativePersistence, getAuth } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-import { initializeApp } from "firebase/app";
-import {initializeAuth,getReactNativePersistence} from 'firebase/auth';
-import { getAnalytics } from "firebase/analytics";
-import {getDatabase} from 'firebase/database';
-import {getFirestore} from 'firebase/firestore';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAnalytics } from 'firebase/analytics';
+import { getDatabase } from 'firebase/database';
+import { getFirestore } from 'firebase/firestore';
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyA6WMBJ-_5yOs9R0Nlg4NimOBN70i3jKI8",
-  authDomain: "liqu-17778.firebaseapp.com",
-  projectId: "liqu-17778",
-  storageBucket: "liqu-17778.firebasestorage.app",
-  messagingSenderId: "559877028217",
-  appId: "1:559877028217:web:27c16b7d35555e01b117a8",
-  measurementId: "G-97EMCGRR4S"
+  apiKey: "AIzaSyBymiMGlVkaRiYHKUDooZloQsgZi3oTsBA",
+  authDomain: "liquorsso.firebaseapp.com",
+  projectId: "liquorsso",
+  storageBucket: "liquorsso.firebasestorage.app",
+  messagingSenderId: "387802343878",
+  appId: "1:387802343878:web:859b183902a6f110b5eac7",
+  measurementId: "G-P77X7T4X6L"
 };
 
-// Initialize Firebase
-export const app = initializeApp(firebaseConfig);
-export const auth = initializeAuth(app,{
-    persistence: getReactNativePersistence(ReactNativeAsyncStorage),
-});
+// Inicializar Firebase solo si no se ha inicializado previamente
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
+// Usar getAuth en lugar de inicializarlo de nuevo
+export const auth = getAuth(app);
+
+// Inicialización de otros servicios
 export const analytics = getAnalytics(app);
-export const databse= getDatabase(app);
-export const db=getFirestore(app);
+export const database = getDatabase(app);
+export const db = getFirestore(app);
+
+
+

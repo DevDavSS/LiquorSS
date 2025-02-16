@@ -4,7 +4,7 @@ import Colors from '../../constants/Colors';
 import React, { useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-export function FormItem({ label, placeholder }) {
+export function FormItem({ label, placeholder, value, onChange }) {
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
@@ -12,10 +12,13 @@ export function FormItem({ label, placeholder }) {
         style={styles.input}
         placeholder={placeholder ? ` ${placeholder}` : "Ingrese texto"}
         placeholderTextColor={Colors.black + '70'}
+        value={value} // Control de valor
+        onChangeText={onChange} // Actualiza el estado del input
       />
     </View>
   );
 }
+
 
 export function BirthdatePicker({ label }) {  // Desestructuramos correctamente 'label'
   const [date, setDate] = useState(new Date());

@@ -9,7 +9,14 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Profile from '../screens/Profile';
 import Cart from '../screens/Cart';
 import Welcome from '../screens/Welcome'
+import { logoutAuth } from '../services/firebase';
+
 const Drawer = createDrawerNavigator();
+
+const logout = async () =>{
+  
+  await logoutAuth()
+}
 
 export default function Dashboard() {
   return (
@@ -163,37 +170,47 @@ export default function Dashboard() {
           ),
         }}
       />
-        <Drawer.Screen
-        name="Logout"
-        component={Welcome}
-        options={{
-          headerShown: false,
-
-          drawerLabel: ({ focused }) => (
-            <View
-              style={[
-                styles.LogoutDrawer,
-                { backgroundColor: focused ? Colors.lowBrawn : 'transparent' }, 
-              ]}
-            >
-              <EvilIcons
-                name="Logout"
-                size={24} 
-                color={focused ? '#fff' : '#aaa'}
-                style={styles.iconStyle}
-              />
-              <Text
-                style={[
-                  styles.drawerLabelText,
-                  { color: focused ? '#fff' : '#aaa' },
-                ]}
-              >
-                Logout
-              </Text>
-            </View>
-          ),
-        }}
-      />
+<Drawer.Screen
+  name="Logout"
+  component={Welcome}
+  options={{
+    headerShown: false,
+    drawerLabel: ({ focused }) => (
+      <View
+        style={[
+          styles.LogoutDrawer,
+          { backgroundColor: focused ? Colors.lowBrawn : 'transparent' },
+        ]}
+      >
+        <EvilIcons
+          name="Logout"
+          size={24}
+          color={focused ? '#fff' : '#aaa'}
+          style={styles.iconStyle}
+        />
+        <Text
+          style={[
+            styles.drawerLabelText,
+            { color: focused ? '#fff' : '#aaa' },
+          ]}
+        >
+          Logout
+        </Text>
+      </View>
+    ),
+    drawerItemStyle: {
+      // Opcional: Si deseas ocultar este ítem del Drawer en alguna condición
+    },
+  }}
+  listeners={({ navigation }) => ({
+    // Esto se ejecuta cuando el ítem de Drawer es presionado
+    focus: async () => {
+      // Llama a logoutAuth antes de cambiar la pantalla
+      await logoutAuth(); // Llama a la función de cierre de sesión
+      navigation.navigate('Welcome'); // Navega a la pantalla de bienvenida
+    },
+  })}
+/>
 
     </Drawer.Navigator>
   );
