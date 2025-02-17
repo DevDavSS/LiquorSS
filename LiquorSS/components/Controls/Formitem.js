@@ -19,39 +19,43 @@ export function FormItem({ label, placeholder, value, onChange }) {
   );
 }
 
+export function BirthdatePicker({ label, value, onChange }) {  
+  const [date, setDate] = useState(value || new Date()); // Inicia con el valor recibido
+  const [show, setShow] = useState(false); // Aquí declaras el estado show
 
-export function BirthdatePicker({ label }) {  // Desestructuramos correctamente 'label'
-  const [date, setDate] = useState(new Date());
-  const [show, setShow] = useState(false);
-
-  const onChange = (event, selectedDate) => {
+  const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShow(Platform.OS === 'ios'); // Mantener abierto en iOS
+    setShow(false); // Oculta el DateTimePicker después de seleccionar
     setDate(currentDate);
+    onChange(currentDate); // Actualiza el estado en el componente padre
   };
 
   const showDatepicker = () => {
-    setShow(true); // Abrir el picker cada vez que presionas el botón
+    setShow(true); // Muestra el DateTimePicker
   };
 
   return (
     <View style={styles.containerBirth}>
       {label && <Text style={styles.label}>{label}</Text>}
       <TouchableOpacity onPress={showDatepicker} style={styles.BirthButton}>
-        <Text style={styles.buttonText}>Seleccionar fecha</Text> {/* Aquí agregamos el texto del botón */}
+        <Text style={styles.buttonText}>
+          {date.toLocaleDateString()} {/* Muestra la fecha seleccionada */}
+        </Text>
       </TouchableOpacity>
       {show && (
         <DateTimePicker
           value={date}
           mode="date"
           display="default"
-          onChange={onChange}
+          onChange={onChangeDate}
           maximumDate={new Date()} 
         />
       )}
     </View>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {

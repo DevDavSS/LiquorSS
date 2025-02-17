@@ -28,7 +28,8 @@ export const registerEmailPass = async (user) => {
     const context = await createUserWithEmailAndPassword(
       auth,
       user.email, // Correo
-      user.password // Contraseña
+      user.password, // Contraseña
+      
     );
     console.log('Usuario creado:', context.user.uid);
 
@@ -38,6 +39,7 @@ export const registerEmailPass = async (user) => {
       
       email: user.email,
       full_name: user.full_name,
+      birthdate: user.birthdate, // Enviamos la fecha seleccionada
     });
 
     return true; // Registro exitoso

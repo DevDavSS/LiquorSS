@@ -15,6 +15,7 @@ export default function LoginScreen({ navigation }) {
     username: '',
     email: '',
     password: '',
+    birthdate: '',
 
   });
   const [loading, setLoading] = useState(false);
@@ -31,6 +32,7 @@ export default function LoginScreen({ navigation }) {
       email: user.email,
       full_name: user.username,
       password: user.password,
+      birthdate: user.birthdate, // Enviamos la fecha seleccionada
     });
   
     if (result) {
@@ -65,9 +67,10 @@ export default function LoginScreen({ navigation }) {
         />
         <BirthdatePicker
           label="Fecha de Nacimiento"
-          value={user.birthdate}
-          onChange={(date) => setUser((prev) => ({ ...prev, birthdate: date }))}
+          value={user.birthdate} // Pasamos el valor actual de la fecha
+          onChange={(date) => setUser((prev) => ({ ...prev, birthdate: date.toISOString().split('T')[0] }))} // Guardamos la fecha en formato ISO
         />
+
         <FormItem
           label="Contraseña"
           placeholder="Your password"
