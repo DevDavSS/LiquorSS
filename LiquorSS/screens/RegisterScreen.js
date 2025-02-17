@@ -7,8 +7,8 @@ import { Title } from '../components/layout/Titles';
 import { FormItem } from '../components/Controls/Formitem';
 import { BirthdatePicker } from '../components/Controls/Formitem';
 import { Content } from '../components/layout/Content';
-import { ScrollView } from 'react-native';
-import { registerEmailPass } from '../services/firebase'; // Asegúrate de tener esta función correctamente importada
+import { ScrollView, Alert } from 'react-native';
+import { registerEmailPass } from '../services/firebase'; 
 
 export default function LoginScreen({ navigation }) {
   const [user, setUser] = useState({
@@ -21,31 +21,35 @@ export default function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   const goToHome = () => {
-    navigation.navigate('Shop'); // Aquí se navegará a la pantalla "Shop" después del registro
+    navigation.navigate('Shop'); 
   };
   const registerUser = async () => {
+    if (!user.username || !user.password || !user.email || !user.birthdate) {
+      Alert.alert('Error', 'Por favor, llena todos los campos.');
+      return;
+    }
     setLoading(true);
-    
-    console.log('Datos del usuario antes del registro:', user); // Verifica que los valores estén definidos
+
+    console.log('Datos del usuario antes del registro:', user); 
   
     const result = await registerEmailPass({
       email: user.email,
       full_name: user.username,
       password: user.password,
-      birthdate: user.birthdate, // Enviamos la fecha seleccionada
+      birthdate: user.birthdate, 
     });
+
   
     if (result) {
       console.log('Registro exitoso');
       setLoading(false);
-      goToHome(); // Navegar a la siguiente pantalla
+      goToHome(); 
     } else {
       console.log('Error en el registro');
       setLoading(false);
     }
   };
-  
-  
+
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -57,7 +61,7 @@ export default function LoginScreen({ navigation }) {
         label="Nombre de usuario"
         placeholder="Your user"
         value={user.username}
-        onChange={(value) => setUser((prev) => ({ ...prev, username: value }))} // Asegúrate de que el onChange esté funcionando
+        onChange={(value) => setUser((prev) => ({ ...prev, username: value }))} 
 />
         <FormItem
           label="Correo Electrónico"
@@ -67,8 +71,8 @@ export default function LoginScreen({ navigation }) {
         />
         <BirthdatePicker
           label="Fecha de Nacimiento"
-          value={user.birthdate} // Pasamos el valor actual de la fecha
-          onChange={(date) => setUser((prev) => ({ ...prev, birthdate: date.toISOString().split('T')[0] }))} // Guardamos la fecha en formato ISO
+          value={user.birthdate} 
+          onChange={(date) => setUser((prev) => ({ ...prev, birthdate: date.toISOString().split('T')[0] }))} 
         />
 
         <FormItem
@@ -81,7 +85,7 @@ export default function LoginScreen({ navigation }) {
         <ButtonClassTwo
           label="REGISTRARME"
           onPress={registerUser}
-          isLoading={loading} // Mostrar un spinner mientras se registra el usuario
+          isLoading={loading} 
         />
       </Content>
     </ScrollView>

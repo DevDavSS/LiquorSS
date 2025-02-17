@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { Alert } from 'react-native';
 
@@ -59,8 +59,11 @@ export const registerEmailPass = async (user) => {
  */
 export const loginWithEmailPass = async (email, password) => {
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    return result;
   } catch (error) {
-    Alert.alert('Error', JSON.stringify(error));
+    Alert.alert('Error', 'Credenciales incorrectas')
+    //Alert.alert('Error', JSON.stringify(error));
+    return false;
   }
 };
