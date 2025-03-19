@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Header } from '../components/layout/Header';
 import { Logo2 } from '../components/layout/Logo';
 import { ButtonClassTwo } from '../components/Controls/Buttons';
-import { Wrapper } from '../components/layout/Wrapper';
 import { Title } from '../components/layout/Titles';
 import { FormItem } from '../components/Controls/Formitem';
 import { BirthdatePicker } from '../components/Controls/Formitem';
@@ -72,7 +71,7 @@ export default function LoginScreen({ navigation }) {
         <BirthdatePicker
           label="Fecha de Nacimiento"
           value={user.birthdate} 
-          onChange={(date) => setUser((prev) => ({ ...prev, birthdate: date.toISOString().split('T')[0] }))} 
+          onChange={(date) => setUser((prev) => ({ ...prev, birthdate: date.toISOString().split('T')[0] }))} //metodo para recibir el valor de la fe`cha de nacimiento
         />
 
         <FormItem

@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
 
   },
   subtitle: {
-    fontFamily: Fonts.family.bold,
+    fontFamily: Fonts.family.regular,
     fontSize: Fonts.size.large,
     color: '#000',
     paddingRight:100

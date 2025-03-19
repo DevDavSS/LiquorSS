@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { deleteDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { Alert } from 'react-native';
 
 import { auth, db } from '../firebase-config';
@@ -65,5 +65,37 @@ export const loginWithEmailPass = async (email, password) => {
     Alert.alert('Error', 'Credenciales incorrectas')
     //Alert.alert('Error', JSON.stringify(error));
     return false;
+  }
+};
+
+
+export const removeFromCart = async (productId) => {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Debes iniciar sesión para eliminar productos del carrito.");
+      return;
+    }
+
+    const cartRef = doc(db, "usuarios", user.uid, "carrito", productId);
+    await deleteDoc(cartRef);
+
+  } catch (error) {
+    console.error("Error al eliminar producto del carrito:", error);
+  }
+};
+
+
+export const updateQuantityInCart = async (productId, newQuantity) => {
+
+  const user = auth.currentUser;
+  try {
+    const productRef = doc(db, "usuarios", user.uid, "carrito", productId);
+    await updateDoc(productRef, {
+      quantity: newQuantity,
+    });
+    console.log("Cantidad actualizada exitosamente.");
+  } catch (error) {
+    console.error("Error al actualizar la cantidad:", error);
   }
 };

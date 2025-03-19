@@ -1,31 +1,61 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../firebase-config';
 import ProductContainer from '../components/layout/Productcontainer';
 import { Content } from '../components/layout/Content';
 import SearchBar from '../components/Controls/Searchbar';
 import RNPickerSelect from 'react-native-picker-select';
 import Colors from '../constants/Colors';
 import Fonts from '../constants/Fonts';
-import { ProductItem } from '../components/layout/Porducitem';
+import {ProductItem} from '../components/layout/Porducitem';
 
 export default function ShopScreen() {
-  const [selectedFilter, setSelectedFilter] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState(null);
+  const [searchText, setSearchText] = useState('');
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleFilterChange = (value) => {
-    setSelectedFilter(value);
-    console.log('Filter selected:', value);
-  };
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      let q = collection(db, "productos");
+      if (selectedFilter) {
+        q = query(q, where("category", "==", selectedFilter));
+      }
+      const querySnapshot = await getDocs(q);
+      const productsList = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setProducts(productsList);
+      setLoading(false);
+    };
+    fetchProducts();
+  }, [selectedFilter]);
+
+  useEffect(() => {
+    if (searchText.trim() === '') {
+      setFilteredProducts(products);
+    } else {
+      const lowercasedFilter = searchText.toLowerCase();
+      setFilteredProducts(products.filter(product =>
+        product.product_name.toLowerCase().includes(lowercasedFilter)
+      ));
+    }
+  }, [searchText, products]);
 
   return (
     <View style={styles.container}>
       <Content style={styles.content}>
-        <SearchBar />
+        <SearchBar value={searchText} onChangeText={setSearchText} />
         <RNPickerSelect
-          onValueChange={handleFilterChange}
+          onValueChange={setSelectedFilter}
           items={[
             { label: 'Vinos', value: 'vinos' },
             { label: 'Cervezas', value: 'cervezas' },
-            { label: 'Licores', value: 'licores' },
+            { label: 'Licores', value: 'licor' },
             { label: 'Sin alcohol', value: 'sin_alcohol' },
           ]}
           placeholder={{
@@ -38,13 +68,16 @@ export default function ShopScreen() {
           value={selectedFilter}
         />
       </Content>
-      <ProductContainer style={styles.productContainer}>
-        <ProductItem label={"BLUE LABEL"} price={"$14000"}/>
-        <ProductItem label={"Whisky"} price={"$8000"}/>
-        <ProductItem label={"white wine"} price={"$11000"}/>
-        <ProductItem label={"tequila"} price={"$12000"}/>
-        <ProductItem label={"Vodka"} price={"$5000"}/>
-      </ProductContainer>
+
+      {loading ? (
+        <ActivityIndicator size="large" color={Colors.wine} />
+      ) : (
+        <ProductContainer style={styles.productContainer}>
+          {filteredProducts.map(product => (
+            <ProductItem key={product.id} product={product} />
+          ))}
+        </ProductContainer>
+      )}
     </View>
   );
 }
@@ -59,11 +92,10 @@ const styles = StyleSheet.create({
   productContainer: {
     flex: 1,
     backgroundColor: Colors.black,
-    flexDirection: 'row', 
-    flexWrap: 'wrap', 
-    justifyContent: 'space-between', 
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     padding: 10,
-    
   },
 });
 

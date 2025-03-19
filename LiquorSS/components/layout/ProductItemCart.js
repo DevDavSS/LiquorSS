@@ -1,16 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import Colors from "../../constants/Colors";
 import { ProductImage } from "./Productimage";
 import Fonts from "../../constants/Fonts";
 import { FontAwesome } from "@expo/vector-icons";
+import { updateQuantityInCart } from "../../services/firebase"; // Importamos la función para actualizar la cantidad
+import { removeFromCart } from "../../services/firebase"; // Importamos la función para eliminar del carrito
 
-export function ProductItemCart({ label, price, onDelete }) {
+export function ProductItemCart({ label, price, productId, onDelete,  }) {
   const [quantity, setQuantity] = useState(1);
+  const [totalPrice, setTotalPrice] = useState(0); // Inicializamos totalPrice con 0
 
-  const increaseQuantity = () => setQuantity(quantity + 1);
-  const decreaseQuantity = () => {
-    if (quantity > 1) setQuantity(quantity - 1);
+  useEffect(() => {
+    // Validamos que price y quantity sean números
+    const validPrice = typeof price === 'number' && !isNaN(price) ? price : 0; 
+    const validQuantity = typeof quantity === 'number' && !isNaN(quantity) ? quantity : 1;
+
+    setTotalPrice(validPrice * validQuantity);
+  }, [quantity, price]);
+
+  const handleDelete = async () => {
+    console.log("Eliminando producto con ID:", productId);
+    await removeFromCart(productId); // Eliminar del carrito
+    onDelete(productId); // Eliminar del estado en Cart.js
+  };
+
+  const handleQuantityChange = async (newQuantity) => {
+    if (newQuantity < 1) return; // Evitar que la cantidad sea menor que 1
+    setQuantity(newQuantity);
+    await updateQuantityInCart(productId, newQuantity); // Actualizamos la cantidad en Firestore
   };
 
   return (
@@ -20,20 +38,22 @@ export function ProductItemCart({ label, price, onDelete }) {
       </View>
       <View style={styles.detailsContainer}>
         {label && <Text style={styles.title}>{label}</Text>}
-        {price && <Text style={styles.price}>{price}</Text>}
+        {price && <Text style={styles.price}>${totalPrice.toFixed(2)}</Text>} {/* Mostrar el precio total */}
         <View style={styles.quantityContainer}>
-          <TouchableOpacity style={styles.quantityButton} onPress={decreaseQuantity}>
+          <TouchableOpacity style={styles.quantityButton} onPress={() => handleQuantityChange(quantity - 1)}>
             <Text style={styles.quantityText}>-</Text>
           </TouchableOpacity>
           <Text style={styles.quantity}>{quantity}</Text>
-          <TouchableOpacity style={styles.quantityButton} onPress={increaseQuantity}>
+          <TouchableOpacity style={styles.quantityButton} onPress={() => handleQuantityChange(quantity + 1)}>
             <Text style={styles.quantityText}>+</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={onDelete} style={styles.deleteButton}>
+        <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
           <FontAwesome name="trash" size={24} color={Colors.wine} />
         </TouchableOpacity>
+        
       </View>
+      
     </View>
   );
 }
