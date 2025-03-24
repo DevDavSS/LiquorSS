@@ -6,8 +6,11 @@ import { Title, SubTitle } from '../components/layout/Titles';
 import ProductContainer from '../components/layout/Productcontainer';
 import { ProductItemCart } from '../components/layout/ProductItemCart';
 import { ButtonClassTwo } from '../components/Controls/Buttons'; // Asegúrate de importar correctamente
-
+import { useNavigation } from '@react-navigation/native';
 export default function Cart() {
+
+  const navigation = useNavigation(); // Obtener el objeto navigation
+  const gotoOrderPlacing = () => navigation.navigate('Order'); // Función para navegar a la pantalla de orden
   const handleRemoveItem = (productId) => {
     setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
   };
@@ -100,7 +103,7 @@ export default function Cart() {
             
           </View>
         </TouchableWithoutFeedback>
-        <ButtonClassTwo label={"Pagar"} /> 
+        <ButtonClassTwo label={"Pagar"} onPress={gotoOrderPlacing}/> 
       </Animated.View>
       
     </View>

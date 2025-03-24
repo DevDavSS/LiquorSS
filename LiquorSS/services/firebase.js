@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth';
-import { deleteDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { deleteDoc, doc, setDoc, updateDoc, collection, addDoc } from 'firebase/firestore';
 import { Alert } from 'react-native';
 
 import { auth, db } from '../firebase-config';
@@ -97,5 +97,55 @@ export const updateQuantityInCart = async (productId, newQuantity) => {
     console.log("Cantidad actualizada exitosamente.");
   } catch (error) {
     console.error("Error al actualizar la cantidad:", error);
+  }
+};
+
+
+
+export const addCreditCard = async (card) => {
+  const user = auth.currentUser;
+  if (!user) {
+    console.error("No hay usuario autenticado");
+    return;
+  }
+
+  try {
+    const userCardsCollectionRef = collection(db, "usuarios", user.uid, "tarjetas");
+    await addDoc(userCardsCollectionRef, {
+      name: card.name,
+      number: card.number,
+      expiry: card.expiry,
+      cvv: card.cvv,
+    });
+
+    Alert.alert("Tarjeta guardada exitosamente");
+  } catch (error) {
+    console.error("Error al guardar la tarjeta:", error);
+  }
+};
+
+export const addNewAddress = async (address) => {
+  const user = auth.currentUser;
+  
+  if (!user) {
+    console.error("Error: No hay usuario autenticado.");
+    return;
+  }
+
+  try {
+    const userAddressCollectionRef = collection(db, "usuarios", user.uid, "adresses");
+    
+    await addDoc(userAddressCollectionRef, {
+      city: address.city,
+      colony: address.colony,
+      street: address.street,
+      number: address.number,
+      status: "0",
+    });
+
+    console.log("Dirección guardada correctamente.");
+
+  } catch (error) {
+    console.error("Error al guardar la dirección:", error);
   }
 };

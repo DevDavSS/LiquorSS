@@ -9,6 +9,8 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import Dashboard from './Dashboard';  
 import Profile from '../screens/Profile';
+import orderPlacing from '../screens/orderPlacing';
+import orderTracking from '../screens/orderTrackingScreen';
 
 
 const Stack = createStackNavigator();
@@ -40,6 +42,15 @@ export default function Navigation() {
           component={Profile}  
           options={{ headerShown: false }} 
         />
+        <Stack.Screen
+          name="Order"
+          component={orderPlacing}
+          options={{ headerShown: false }}/>
+
+        <Stack.Screen
+          name="OrderTracking"
+          component={orderTracking}
+          options={{ headerShown: false }}/>
       </Stack.Navigator>
       
     </NavigationContainer>

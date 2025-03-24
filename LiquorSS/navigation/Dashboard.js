@@ -10,7 +10,8 @@ import Profile from '../screens/Profile';
 import Cart from '../screens/Cart';
 import Welcome from '../screens/Welcome'
 import { logoutAuth } from '../services/firebase';
-
+import orderPlacing from '../screens/orderPlacing';
+import orderTracking from '../screens/orderTrackingScreen';
 const Drawer = createDrawerNavigator();
 
 const logout = async () =>{
@@ -170,6 +171,33 @@ export default function Dashboard() {
           ),
         }}
       />
+        <Drawer.Screen
+          name="OrderTracking"
+          component={orderTracking}
+          options={{
+            headerShown: true,
+            header: ({ navigation }) => (
+              <Header 
+                navigation={navigation} 
+                showBack={() => navigation.navigate('Order')} 
+              />
+            ),
+          }}
+        />
+
+      <Drawer.Screen
+          name="Order"
+          component={orderPlacing}
+          options={{
+            headerShown: true,
+            header: ({ navigation }) => (
+              <Header 
+                navigation={navigation} 
+                showBack={() => navigation.navigate('Cart')} 
+              />
+            ),
+          }}
+        />
 <Drawer.Screen
   name="Logout"
   component={Welcome}
@@ -211,6 +239,7 @@ export default function Dashboard() {
     },
   })}
 />
+
 
     </Drawer.Navigator>
   );

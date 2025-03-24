@@ -4,15 +4,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Logo3 } from './Logo';
 
-
-export function Header({ showBack = false }) {
+export function Header({ showBack }) {
   const navigation = useNavigation();
+
   const goToBack = () => {
-    navigation.goBack();
+    if (typeof showBack === 'function') {
+      showBack(); // Ejecuta la función personalizada si se proporciona
+    } else {
+      navigation.goBack();
+    }
   };
 
   const showDrawer = () => {
-
     if (navigation && navigation.openDrawer) {
       navigation.openDrawer();
     } else {
@@ -22,7 +25,6 @@ export function Header({ showBack = false }) {
 
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 20, marginTop:30 }}>
-      
       {showBack ? (
         <TouchableOpacity onPress={goToBack}>
           <Ionicons name="arrow-back-outline" size={40} color="black" />
@@ -32,8 +34,6 @@ export function Header({ showBack = false }) {
           <Ionicons name="menu" size={40} color="black" />
         </TouchableOpacity>
       )}
-
- 
     </View>
   );
 }
