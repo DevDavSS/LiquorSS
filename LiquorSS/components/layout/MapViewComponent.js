@@ -1,42 +1,51 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import { StyleSheet, View, Image, Modal, Text, TouchableOpacity } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import { auth, db } from "../../firebase-config"; // Asumiendo que estás utilizando Firebase
+import { auth, db } from "../../firebase-config";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import getCoordinatesFromAddress from "../../services/googleServices";
-import { useFocusEffect } from "@react-navigation/native"; // Agrega esta importación
-import { Title, SubTitle } from "./Titles";
+import { useFocusEffect } from "@react-navigation/native"; 
 import Colors from "../../constants/Colors";
 import mapStyle from "../../constants/mapStyles";
-export default function MapViewComponent() {
+import Fonts from "../../constants/Fonts";
+import { useNavigation } from "@react-navigation/native";
 
-  
-  
+export default function MapViewComponent() {
   const [origin, setOrigin] = useState({
-    latitude: 20.589290,  // CDMX - Zócalo
+    latitude: 20.589290,  
     longitude: -100.389536
   });
 
   const [destination, setDestination] = useState({
-    latitude: 20.589290,  // CDMX - Zócalo
+    latitude: 20.589290,  
     longitude: -100.389536
   });
 
   const [routeCoords, setRouteCoords] = useState([]);
-  const [activeAddress, setActiveAddress] = useState(null); // Dirección activa
+  const [activeAddress, setActiveAddress] = useState(null); 
+  const [courierPosition, setCourierPosition] = useState(origin); 
+  const [index, setIndex] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false); // Estado para el modal
 
-  // Llamar a getActiveAddress cada vez que la pantalla se enfoque
+  const mapRef = useRef(null);
+  const navigation = useNavigation();
+
   useFocusEffect(
     React.useCallback(() => {
-      getActiveAddress(); // Obtiene la dirección activa cada vez que la pantalla se enfoca
+      getActiveAddress(); 
     }, [])
   );
 
   useEffect(() => {
     if (activeAddress) {
-      getRouteCoordinates(activeAddress, destination); // Llama a la API de rutas cuando la dirección cambia
+      setDestination({
+        latitude: activeAddress.latitude,
+        longitude: activeAddress.longitude
+      });
+
+      getRouteCoordinates(origin, activeAddress); 
     }
-  }, [activeAddress, destination]);
+  }, [activeAddress]);
 
   const getActiveAddress = async () => {
     try {
@@ -44,14 +53,13 @@ export default function MapViewComponent() {
       if (!user) return;
 
       const addressRef = collection(db, "usuarios", user.uid, "adresses");
-      const q = query(addressRef, where("status", "==", "1")); // Filtra por estado activo
+      const q = query(addressRef, where("status", "==", "1"));
 
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         const activeDoc = querySnapshot.docs[0];
         const activeData = activeDoc.data();
 
-        // Si las coordenadas no están disponibles en activeData, obtenerlas mediante geocodificación
         if (!activeData.latitude || !activeData.longitude) {
           const address = `${activeData.street}, ${activeData.number}, ${activeData.colony}, ${activeData.city}`;
           const coords = await getCoordinatesFromAddress(address);
@@ -60,8 +68,8 @@ export default function MapViewComponent() {
             activeData.longitude = coords.longitude;
           }
         }
-        
-        setActiveAddress(activeData); // Establece la dirección activa con las coordenadas
+
+        setActiveAddress(activeData); 
       }
     } catch (error) {
       console.error("Error al obtener la dirección activa:", error);
@@ -123,41 +131,133 @@ export default function MapViewComponent() {
     return points;
   };
 
+  useEffect(() => {
+    if (routeCoords.length > 0) {
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < routeCoords.length) {
+          setCourierPosition(routeCoords[i]);
+          setIndex(i);
+          i++;
+        } else {
+          clearInterval(interval); // Detiene el intervalo una vez que se han recorrido todas las coordenadas
+        }
+      }, 100);
+  
+      return () => clearInterval(interval); // Limpia el intervalo cuando el componente se desmonte
+    }
+  }, [routeCoords]);
+
+  // Mover el mapa para seguir al repartidor
+  useEffect(() => {
+    if (courierPosition && mapRef.current) {
+      mapRef.current.animateToRegion({
+        latitude: courierPosition.latitude,
+        longitude: courierPosition.longitude,
+        latitudeDelta: 0.02,  // Valor menor para acercar más el mapa
+        longitudeDelta: 0.02, // Valor menor para acercar más el mapa
+      });
+    }
+  }, [courierPosition]);
+
+  // Verificar si el repartidor ha llegado a su destino usando la fórmula de Haversine
+  const haversineDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Radio de la Tierra en kilómetros
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // Distancia en kilómetros
+    return distance; // Puedes ajustar el valor en metros si lo deseas
+  };
+
+  useEffect(() => {
+    if (courierPosition && destination) {
+      const distance = haversineDistance(
+        courierPosition.latitude,
+        courierPosition.longitude,
+        destination.latitude,
+        destination.longitude
+      );
+
+      if (distance < 0.1) { // Si la distancia es menor a 100 metros
+        setModalVisible(true); // Mostrar el modal cuando el repartidor llegue
+      }
+    }
+  }, [courierPosition, destination]);
+
+  const handleFinishOrder = () => {
+    setModalVisible(false); // Cerrar el modal
+    navigation.navigate("Shop"); // Navegar a la pantalla de "Shop"
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.mapContainer}>
         <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: origin.latitude,
-          longitude: origin.longitude,
-          latitudeDelta: 0.1,
-          longitudeDelta: 0.1,
-        }}
-        customMapStyle={mapStyle} // Aplica el estilo personalizado aquí
-      >
-        {/* Origen: Dirección predeterminada */}
-        <Marker coordinate={origin} title="Origen - Zócalo" />
+          ref={mapRef} // Asignar el ref al MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: origin.latitude,
+            longitude: origin.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
+          customMapStyle={mapStyle}
+        >
+          <Marker coordinate={origin} title="Origen - Zócalo" />
 
-        {/* Destino: Dirección activa obtenida de Firebase */}
-        {activeAddress && activeAddress.latitude && activeAddress.longitude && (
-          <Marker
-            coordinate={{
-              latitude: activeAddress.latitude,
-              longitude: activeAddress.longitude,
-            }}
-            title="Destino - Dirección Activa"
-          />
-        )}
+          {activeAddress && activeAddress.latitude && activeAddress.longitude && (
+            <Marker
+              coordinate={{
+                latitude: activeAddress.latitude,
+                longitude: activeAddress.longitude,
+              }}
+              title="Destino - Dirección Activa"
+            />
+          )}
 
-        {/* Destino fijo: Estadio Azteca */}
-        <Marker coordinate={destination} title="Destino - Estadio Azteca" />
+          {courierPosition && (
+            <Marker
+              coordinate={courierPosition}
+              title="Repartidor en camino"
+            >
+              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <Image
+                  source={require('../../assets/images/delorean.png')} // Ruta a la imagen
+                  style={{
+                    width: 50,  // Tamaño ajustado del ícono
+                    height: 50, // Tamaño ajustado del ícono
+                    resizeMode: 'contain', // Ajusta la imagen sin cortarla
+                  }}
+                />
+              </View>
+            </Marker>
+          )}
 
-        {/* Ruta */}
-        {routeCoords.length > 0 && <Polyline coordinates={routeCoords} strokeWidth={5} strokeColor="blue" />}
-      </MapView>        
+          {routeCoords.length > 0 && <Polyline coordinates={routeCoords} strokeWidth={5} strokeColor="red" />}
+        </MapView>
       </View>
-      
+
+      {/* Modal de pedido finalizado */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>¡Pedido Finalizado!</Text>
+            <TouchableOpacity style={styles.button} onPress={handleFinishOrder}>
+              <Text style={styles.buttonText}>Finalizar Pedido</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -168,13 +268,42 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     width: "100%",
-    height: "95%",  
+    height: "95%",
     justifyContent: "center",
-    alignItems: "center",  
+    alignItems: "center",
     backgroundColor: Colors.lightGray,
   },
   map: {
-    width: "90%",  
-    height: "100%", 
+    width: "90%",
+    height: "100%",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: Fonts.family.bold,
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: Colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'black',
+    fontSize: 16,
+    fontFamily: Fonts.family.regular,
   },
 });

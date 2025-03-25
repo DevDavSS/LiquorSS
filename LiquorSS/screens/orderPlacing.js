@@ -3,7 +3,7 @@ import { SubTitle } from '../components/layout/Titles';
 import DeliveryAddressField from '../components/layout/deliveyAdressField'; // Componente para agregar dirección
 import { useEffect, useState } from 'react';
 import { db, auth } from '../firebase-config';
-import { collection, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, deleteDoc, addDoc, getDocs } from 'firebase/firestore';
 import { CompactProductItemCart } from '../components/layout/compactProductItemCart';
 import ProductContainer from '../components/layout/Productcontainer';
 import PaymentSelector from '../components/layout/paymentTypeField';
@@ -22,7 +22,68 @@ export default function OrderPlacing() {
   const [selectedAddress, setSelectedAddress] = useState(null); // Estado para la dirección seleccionada
 
   const navigation = useNavigation(); // Obtener el objeto navigation
-  const gotoOrderPlacing = () => navigation.navigate('OrderTracking'); // Función para navegar a la pantalla de orden
+  const clearCart = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+  
+      const cartRef = collection(db, "usuarios", user.uid, "carrito");
+  
+      // Obtener todos los productos del carrito
+      const querySnapshot = await getDocs(cartRef);
+  
+      // Eliminar todos los productos del carrito
+      const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
+      
+      // Esperar a que se eliminen todos los productos
+      await Promise.all(deletePromises);
+  
+      console.log("Carrito vacío");
+  
+    } catch (error) {
+      console.error("Error al vaciar el carrito:", error);
+    }
+  };
+  
+  const gotoOrderPlacing = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        console.log("No hay usuario autenticado");
+        return;
+      }
+  
+      // Crear un objeto con los productos del carrito y el total
+      const orderData = {
+        products: cartItems.map(item => ({
+          productId: item.id,
+          productName: item.product_name,
+          quantity: item.quantity || 1,
+          price: item.price,
+        })),
+        total: calculateFinalTotal(), // Usamos el total calculado
+        date: new Date().toISOString(), // Fecha en formato ISO
+      };
+  
+      // Obtener la referencia de la subcolección "orderHistory"
+      const orderRef = collection(db, "usuarios", user.uid, "orderHistory");
+  
+      // Agregar la nueva orden
+      await addDoc(orderRef, orderData);
+  
+      console.log("Orden registrada en el historial");
+  
+      // Vaciar el carrito después de realizar el pedido
+      await clearCart();
+  
+      // Navegar a la pantalla de seguimiento de la orden
+      navigation.navigate('OrderTracking');
+    
+    } catch (error) {
+      console.error("Error al registrar la orden:", error);
+    }
+  };
+  
 
   useEffect(() => {
     const fetchCartItems = () => {

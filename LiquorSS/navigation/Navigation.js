@@ -11,6 +11,7 @@ import Dashboard from './Dashboard';
 import Profile from '../screens/Profile';
 import orderPlacing from '../screens/orderPlacing';
 import orderTracking from '../screens/orderTrackingScreen';
+import MapViewComponent from '../components/layout/MapViewComponent';
 
 
 const Stack = createStackNavigator();
@@ -51,6 +52,12 @@ export default function Navigation() {
           name="OrderTracking"
           component={orderTracking}
           options={{ headerShown: false }}/>
+
+
+          <Stack.Screen name="MapScreen" component={MapViewComponent} />
+          {/* otras pantallas */}
+
+
       </Stack.Navigator>
       
     </NavigationContainer>
