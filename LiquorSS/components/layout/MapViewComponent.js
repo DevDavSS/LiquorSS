@@ -11,15 +11,15 @@ import mapStyle from "../../constants/mapStyles";
 export default function MapViewComponent() {
 
   
-
+  
   const [origin, setOrigin] = useState({
-    latitude: 19.432608, // CDMX - Zócalo
-    longitude: -99.133209,
+    latitude: 20.589290,  // CDMX - Zócalo
+    longitude: -100.389536
   });
 
   const [destination, setDestination] = useState({
-    latitude: 19.390519, // CDMX - Estadio Azteca
-    longitude: -99.14964,
+    latitude: 20.589290,  // CDMX - Zócalo
+    longitude: -100.389536
   });
 
   const [routeCoords, setRouteCoords] = useState([]);
@@ -168,13 +168,13 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     width: "100%",
-    height: "95%",  // Ajusta el tamaño del contenedor del mapa si es necesario
+    height: "95%",  
     justifyContent: "center",
-    alignItems: "center",  // Centra el mapa
+    alignItems: "center",  
     backgroundColor: Colors.lightGray,
   },
   map: {
-    width: "90%",  // El mapa ocupa el 90% del ancho del contenedor
-    height: "100%", // El mapa ocupa el 100% del contenedor
+    width: "90%",  
+    height: "100%", 
   },
 });
