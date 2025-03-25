@@ -23,9 +23,11 @@ export default function MapViewComponent() {
 
   const [routeCoords, setRouteCoords] = useState([]);
   const [activeAddress, setActiveAddress] = useState(null); 
-  const [courierPosition, setCourierPosition] = useState(origin); 
+  const [courierPosition, setCourierPosition] = useState(null); 
   const [index, setIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false); // Estado para el modal
+
+
 
   const mapRef = useRef(null);
   const navigation = useNavigation();
@@ -142,7 +144,7 @@ export default function MapViewComponent() {
         } else {
           clearInterval(interval); // Detiene el intervalo una vez que se han recorrido todas las coordenadas
         }
-      }, 100);
+      }, 600);
   
       return () => clearInterval(interval); // Limpia el intervalo cuando el componente se desmonte
     }
@@ -175,19 +177,22 @@ export default function MapViewComponent() {
   };
 
   useEffect(() => {
-    if (courierPosition && destination) {
-      const distance = haversineDistance(
-        courierPosition.latitude,
-        courierPosition.longitude,
-        destination.latitude,
-        destination.longitude
-      );
-
-      if (distance < 0.1) { // Si la distancia es menor a 100 metros
-        setModalVisible(true); // Mostrar el modal cuando el repartidor llegue
-      }
+    if (!courierPosition || !destination) return; // Evita cálculos innecesarios
+  
+    const distance = haversineDistance(
+      courierPosition.latitude,
+      courierPosition.longitude,
+      destination.latitude,
+      destination.longitude
+    );
+  
+    console.log(`Distancia al destino: ${distance} km`);
+  
+    if (distance < 0.03) { // Reducir el umbral a 30 metros
+      setModalVisible(true);
     }
   }, [courierPosition, destination]);
+  
 
   const handleFinishOrder = () => {
     setModalVisible(false); // Cerrar el modal

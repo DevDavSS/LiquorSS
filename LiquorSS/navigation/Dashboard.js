@@ -12,6 +12,8 @@ import Welcome from '../screens/Welcome'
 import { logoutAuth } from '../services/firebase';
 import orderPlacing from '../screens/orderPlacing';
 import orderTracking from '../screens/orderTrackingScreen';
+import purchaseHistoryScreen from '../screens/purchaseHistory';
+
 const Drawer = createDrawerNavigator();
 
 const logout = async () =>{
@@ -182,6 +184,7 @@ export default function Dashboard() {
                 showBack={() => navigation.navigate('Order')} 
               />
             ),
+            drawerItemStyle: { display: 'none' }, // Esto ocultará el ítem en el Drawer
           }}
         />
 
@@ -196,8 +199,26 @@ export default function Dashboard() {
                 showBack={() => navigation.navigate('Cart')} 
               />
             ),
+            drawerItemStyle: { display: 'none' }, // Esto ocultará el ítem en el Drawer
           }}
         />
+
+        
+    <Drawer.Screen
+      name="purchaseHistory"
+      component={purchaseHistoryScreen}
+      options={{
+        headerShown: true,
+        header: ({ navigation }) => (
+          <Header 
+            navigation={navigation} 
+            showBack={() => navigation.navigate('Shop')} 
+          />
+        ),
+        drawerItemStyle: { display: 'none' }, // Esto ocultará el ítem en el Drawer
+      }}
+    />
+
 <Drawer.Screen
   name="Logout"
   component={Welcome}

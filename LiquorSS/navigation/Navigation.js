@@ -12,6 +12,7 @@ import Profile from '../screens/Profile';
 import orderPlacing from '../screens/orderPlacing';
 import orderTracking from '../screens/orderTrackingScreen';
 import MapViewComponent from '../components/layout/MapViewComponent';
+import purchaseHistoryScreen from '../screens/purchaseHistory';
 
 
 const Stack = createStackNavigator();
@@ -52,6 +53,12 @@ export default function Navigation() {
           name="OrderTracking"
           component={orderTracking}
           options={{ headerShown: false }}/>
+        
+        <Stack.Screen
+          name="purchaseHistory"
+          component={purchaseHistoryScreen}
+          options={{ headerShown: false }}/>
+
 
 
           <Stack.Screen name="MapScreen" component={MapViewComponent} />
