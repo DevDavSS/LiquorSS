@@ -92,8 +92,8 @@ export default function OrderPlacing() {
 
   return (
     <View style={styles.container}>
-      <SubTitle label="Place your order" />
-      
+
+      <Text style={styles.title}>Place your order</Text>
       {/* Componente DeliveryAddressField para seleccionar la dirección */}
       <DeliveryAddressField onAddressSelect={handleAddressSelection} />
 
@@ -212,4 +212,12 @@ const styles = StyleSheet.create({
     color: Colors.wine, // Color destacado para el total
     fontFamily: Fonts.family.regular,
   },
+    title: {
+      fontSize: 25,
+      fontFamily: Fonts.family.bold,
+      color: Colors.primary,
+      marginLeft: 10,
+
+      marginBottom: 20,
+    },
 });
