@@ -6,7 +6,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import getCoordinatesFromAddress from "../../services/googleServices";
 import { useFocusEffect } from "@react-navigation/native"; // Agrega esta importación
 import { Title, SubTitle } from "./Titles";
-
+import Colors from "../../constants/Colors";
 import mapStyle from "../../constants/mapStyles";
 export default function MapViewComponent() {
 
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     width: "100%",
-    height: "65%",  // Ajusta el tamaño del contenedor del mapa si es necesario
+    height: "95%",  // Ajusta el tamaño del contenedor del mapa si es necesario
     justifyContent: "center",
     alignItems: "center",  // Centra el mapa
     backgroundColor: Colors.lightGray,
